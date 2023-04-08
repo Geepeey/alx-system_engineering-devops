@@ -1,22 +1,36 @@
-# Install Nginx and update apt-get packages
-apt::update { 'update':
-  before => Class['nginx'],
+# A Puppet manifest that sets up an Nginx web server on a server
+# It adds a custom HTTP header with Puppet
+
+exec { 'update':
+  command => '/usr/bin/apt-get update',
 }
 
-class { 'nginx': }
-
-# Add a custom HTTP header to Nginx configuration file
-file_line { 'http_header':
-  path  => '/etc/nginx/nginx.conf',
-  line  => "add_header X-Served-By \"${::hostname}\";",
-  match => 'http {',
-  require => Class['nginx'],
+package { 'nginx':
+  ensure  => installed,
+  require => Exec['update'],
 }
 
-# Restart the Nginx service after modifying its configuration
+file { '/var/www/html/index.html':
+  ensure  => 'present',
+  content => 'Holberton School',
+  require => Package['nginx'],
+}
+
+file { '/etc/nginx/sites-available/default':
+  ensure  => 'present',
+  require => Package['nginx'],
+}
+
+
+file_line { 'addHeader':
+  ensure  => 'present',
+  path    => '/etc/nginx/sites-available/default',
+  line    => 'add_header X-Served-By $hostname;',
+  require => File['/etc/nginx/sites-available/default'],
+}
+
 service { 'nginx':
-  ensure     => running,
-  enable     => true,
-  subscribe  => [File_line['http_header']],
-  require    => Class['nginx'],
+  ensure  => running,
+  require => Package['nginx'],
 }
+
