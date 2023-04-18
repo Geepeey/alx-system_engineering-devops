@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Fixes a web server to run Nginx as the nginx user listening on port 8080.
+
+# Set nginx user in nginx.conf
+sed -i 's/user .*/user nginx;/' /etc/nginx/nginx.conf
+
+# Set listen directive in nginx.conf
+sed -i 's/listen       .*/listen       8080;/' /etc/nginx/nginx.conf
+
+# Restart Nginx
+service nginx restart
