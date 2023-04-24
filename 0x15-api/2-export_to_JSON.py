@@ -9,7 +9,7 @@ Export the data into JSON format.
 import json
 import requests
 import sys
-
+import csv
 
 if __name__ == '__main__':
     employee_id = sys.argv[1]
@@ -23,14 +23,19 @@ if __name__ == '__main__':
     response = requests.get(todo_url)
     tasks = response.json()
 
-    todo_list = []
+    # Write tasks to JSON
+    data = {employee_id: []}
     for task in tasks:
-        task_dict = {"task": task.get('title'),
-                     "completed": task.get('completed'),
-                     "username": employee_name}
-        todo_list.append(task_dict)
-
-    output = {employee_id: todo_list}
+        task_status = True if task.get('completed') else False
+        task_title = task.get('title')
+        data[employee_id].append({
+            'task': task_title,
+            'completed': task_status,
+            'username': employee_name
+        })
 
     with open(f"{employee_id}.json", mode='w') as file:
-        json.dump(output, file, indent=4)
+        json.dump(data, file)
+
+    with open(f"{employee_id}.json", mode='r') as file:
+        print(file.read().strip())
