@@ -19,11 +19,8 @@ if __name__ == '__main__':
     response = requests.get(todo_url)
     tasks = response.json()
 
-    with open(f"{employee_id}.csv", mode='w') as file:
+    with open(f"{employee_id}.csv", mode='w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(['USER_ID', 'USERNAME', 'TASK_COMPLETED_STATUS',
-                         'TASK_TITLE'])
-
         for task in tasks:
             task_status = 'True' if task.get('completed') else 'False'
             task_title = task.get('title')
