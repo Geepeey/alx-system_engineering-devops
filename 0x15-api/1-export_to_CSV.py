@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
 """
 Accessing a REST API for todo lists of employees.
 Export the data into CSV format.
@@ -8,7 +7,6 @@ Export the data into CSV format.
 import csv
 import requests
 import sys
-
 
 if __name__ == '__main__':
     employeeId = sys.argv[1]
