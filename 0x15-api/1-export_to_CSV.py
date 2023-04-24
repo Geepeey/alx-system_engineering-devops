@@ -1,31 +1,33 @@
 #!/usr/bin/python3
-"""Accessing a REST API for todo lists of employees."""
+"""Exports to-do list information for a given employee ID to CSV format.
 
+Usage: python3 export_todo_csv.py USER_ID
+
+USER_ID: The ID of the user whose to-do list will be exported.
+"""
 import csv
 import requests
 import sys
 
-if __name__ == '__main__':
-    employeeId = sys.argv[1]
-    baseUrl = "https://jsonplaceholder.typicode.com/users"
-    url = f"{baseUrl}/{employeeId}"
+if __name__ == "__main__":
+    user_id = sys.argv[1]
+    user_url = "https://jsonplaceholder.typicode.com/"
+    user = requests.get(user_url + "users/{}".format(user_id)).json()
+    user_name = user.get("username")
+    user_todos = requests.get(
+        user_url + "todos", params={"userId": user_id}).json()
 
-    response = requests.get(url)
-    employeeName = response.json().get('username')
-
-    todoUrl = f"{url}/todos"
-    response = requests.get(todoUrl)
-    tasks = response.json()
-
-    with open(f"{employeeId}.csv", mode='w') as file:
-        writer = csv.writer(file)
-        writer.writerow(
-            ['USER_ID', 'USERNAME', 'TASK_COMPLETED_STATUS', 'TASK_TITLE'])
-
-        for task in tasks:
-            task_status = 'True' if task.get('completed') else 'False'
-            task_title = task.get('title')
-            writer.writerow(
-                [employeeId, employeeName, task_status, task_title])
-            print(f'"{employeeId}","{employeeName}",'
-                  f'"{task_status}","{task_title}"')
+    with open("{}.json".format(user_id), "w") as jsonfile:
+        json.dump(
+            {
+                user_id: [
+                    {
+                        "task": t.get("title"),
+                        "completed": t.get("completed"),
+                        "username": user_name,
+                    }
+                    for t in user_todos
+                ]
+            },
+            jsonfile,
+        )

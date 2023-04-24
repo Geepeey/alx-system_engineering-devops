@@ -1,41 +1,23 @@
 #!/usr/bin/python3
-
-"""
-Accessing a REST API for todo lists of employees.
-
-Export the data into JSON format.
-"""
-
+"""Exports to-do list information for a given employee ID to JSON format."""
 import json
-import requests
+from urllib import request, parse
 import sys
-import csv
 
-if __name__ == '__main__':
-    employee_id = sys.argv[1]
-    base_url = "https://jsonplaceholder.typicode.com/users"
-    url = f"{base_url}/{employee_id}"
+if __name__ == "__main__":
+    user_id = sys.argv[1]
+    user_url = "https://jsonplaceholder.typicode.com/"
+    user_dict = requests.get(user_url + "users/{}".format(user_id)).json()
+    user_name = user_dict.get("username")
+    [{
+        "task": t.get("title"),
+        "completed": t.get("completed"),
+        "username": user_name
+    } for t in user_todos]
 
-    response = requests.get(url)
-    employee_name = response.json().get('username')
-
-    todo_url = f"{url}/todos"
-    response = requests.get(todo_url)
-    tasks = response.json()
-
-    # Write tasks to JSON
-    data = {employee_id: []}
-    for task in tasks:
-        task_status = True if task.get('completed') else False
-        task_title = task.get('title')
-        data[employee_id].append({
-            'task': task_title,
-            'completed': task_status,
-            'username': employee_name
-        })
-
-    with open(f"{employee_id}.json", mode='w') as file:
-        json.dump(data, file)
-
-    with open(f"{employee_id}.json", mode='r') as file:
-        print(file.read().strip())
+    with open("{}.json".format(user_id), "w") as jsonfile:
+        json.dump({user_id: [{
+            "task": t.get("title"),
+            "completed": t.get("completed"),
+            "username": user_name
+        } for t in user_todos]}, jsonfile)
