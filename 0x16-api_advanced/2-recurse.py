@@ -5,6 +5,7 @@ import requests
 
 
 def recurse(subreddit, hot_list=[]):
+    """Return list of all hot post"""
     url = "https://www.reddit.com/r/{subreddit}/hot.json?limit=100"
     headers = {"User-Agent": "My Agent"}
     response = requests.get(url, headers=headers, allow_redirects=False)
