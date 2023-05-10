@@ -5,6 +5,7 @@ import requests
 
 
 def count_words(subreddit, word_list, after=None, count_dict=None):
+    """Recursive function to query the Reddit API"""
     if count_dict is None:
         count_dict = {}
 
