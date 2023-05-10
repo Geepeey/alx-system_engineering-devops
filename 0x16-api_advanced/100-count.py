@@ -9,7 +9,11 @@ def count_words(subreddit, word_list, after=None, count_dict=None):
     if count_dict is None:
         count_dict = {}
 
-    url = f"https://www.reddit.com/r/{subreddit}/hot.json?limit=100&after={after}"
+    url = (
+        "https://www.reddit.com/r/{}/hot.json"
+        "?limit=100&after={}"
+    ).format(subreddit, after)
+
     headers = {"User-Agent": "My Agent"}
     response = requests.get(url, headers=headers, allow_redirects=False)
 
